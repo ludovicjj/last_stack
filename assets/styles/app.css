@@ -1,0 +1,139 @@
+body {
+    background-color: #2b2f32;
+}
+
+[data-popover-target=card]:after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 1rem;
+    border-width: .75rem;
+    @apply border-t-white dark:border-t-gray-900 border-transparent;
+}
+
+/*#voyage-list {*/
+/*    transition: opacity .3s ease-out;*/
+/*}*/
+/*#voyage-list[busy] {*/
+/*    opacity: 0.5;*/
+/*    pointer-events: none;*/
+/*}*/
+#flash-container {
+    position: fixed;
+    right: 1rem;
+    top: 1rem;
+}
+#toast-success {
+    color: rgb(107 114 128 / 1);
+    max-width: 25rem;
+    min-width: 20rem;
+    background-color: rgb(255 255 255 / 1);
+    /*transition: opacity .3s ease-in-out;*/
+}
+#toast-success .toast-icon{
+    background-color: rgb(222 247 236 / 1);
+    border-radius: .5rem;
+    width: 2rem;
+    height: 2rem;
+    color: rgb(14 159 110 / 1);
+}
+
+#toast-success .toast-close {
+    border-radius: .5rem;
+    width: 2rem;
+    height: 2rem;
+    margin: -.375rem;
+    border-width: 0;
+}
+#toast-success .toast-close svg {
+    width: .75rem;
+    height: .75rem;
+}
+#toast-success .toast-close:hover{
+    color: rgb(17 24 39 / 1);
+}
+
+#toast-success .toast-timebar {
+    height: 8px;
+    transition: width 5s linear;
+    transition-delay: 10ms;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    border-radius: 0 0 0 .3rem;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 500ms;
+}
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+.fade-enter-to, .fade-leave-from {
+    opacity: 1;
+}
+.d-none {
+    display: none;
+}
+
+
+::backdrop {
+    background: rgba(23, 27, 33, .7);
+}
+
+/* Définition des keyframes pour l'animation fade-in */
+@keyframes fadeIn {
+    0% {
+        top: 10%;
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        top: 50%;
+    }
+}
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        top: 50%;
+    }
+    20% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+        top: 10%;
+    }
+}
+.dialog {
+    max-width: 50%;
+    min-width: 50%;
+    transform: translateY(-50%)
+}
+
+/* Classe d'animation */
+.fade-in {
+    animation: fadeIn .5s ease-out forwards;
+}
+.fade-out {
+    animation: fadeOut .5s ease-out forwards;
+}
+/* loader modal */
+.spinner {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(farthest-side,#474bff 94%,#0000) top/9px 9px no-repeat,
+    conic-gradient(#0000 30%,#474bff);
+    -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 9px),#000 0);
+    animation: spinner-c7wet2 1s infinite linear;
+}
+
+@keyframes spinner-c7wet2 {
+    100% {
+        transform: rotate(1turn);
+    }
+}

@@ -1,0 +1,15 @@
+<tr class="even:bg-gray-700 odd:bg-gray-600" id="voyage-list-item-{{ voyage.id }}">
+    <td class="whitespace-nowrap">{{ voyage.id }}</td>
+    <td class="">{{ voyage.purpose }}</td>
+    <td class="whitespace-nowrap">{{ voyage.leaveAt ? voyage.leaveAt|date('Y-m-d H:i:s') : '' }}</td>
+    <td class="whitespace-nowrap">
+        <a href="{{ path('app_voyage_show', {'id': voyage.id}) }}" class="btn btn-sm btn-secondary">show</a>
+        <a
+                href="{{ path('app_voyage_edit', {'id': voyage.id}) }}"
+                class="btn btn-sm btn-secondary"
+                data-turbo-frame="modal"
+        >
+            edit
+        </a>
+    </td>
+</tr>

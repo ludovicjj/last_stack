@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+{% block title %}Space Inviters!{% endblock %}
+
+{% macro sortArrow(sortName, sort, sortDirection) %}
+    {% if sort == sortName %}
+        {% if sortDirection == 'asc' %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M6 15l6 -6l6 6"></path>
+            </svg>
+        {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M6 9l6 6l6 -6"></path>
+            </svg>
+        {% endif %}
+    {% else %}
+        <!-- up and down arrow svg -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4 text-slate-300" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M8 9l4 -4l4 4"></path>
+            <path d="M16 15l-4 4l-4 -4"></path>
+        </svg>
+    {% endif %}
+{% endmacro %}
+
+
+{% block body %}
+    <div class="container">
+        <aside class="mb-4">
+                <h2 class="text-xl text-white font-semibold mb-6 px-2">Planets</h2>
+                <turbo-frame id="planet-info">
+                    {{ include('partial/_planet_list.html.twig') }}
+                </turbo-frame>
+        </aside>
+
+        <aside class="mb-4">
+                <h2 class="text-xl text-white font-semibold mb-6 px-2">Voyage</h2>
+                <a href="{{ path('app_voyage_index') }}" class="btn btn-light">Voir les voyages</a>
+        </aside>
+
+        <section>
+            <form
+                    method="GET"
+                    action="{{ path('app_homepage') }}"
+                    class="mb-6 flex justify-between"
+                    data-controller="autosubmit"
+                    autofocus
+                    data-turbo-frame="voyage-list"
+            >
+                <input
+                        type="search"
+                        name="query"
+                        value="{{ app.request.query.get('query') }}"
+                        aria-label="Search voyages"
+                        placeholder="Search voyages"
+                        class="form-control"
+                        data-action="autosubmit#debouncedSubmit"
+                >
+                {% block result_count %}
+                <div class="my-2 text-light" id="voyage-result-count">{{ voyages.totalItemCount }} results</div>
+                {% endblock %}
+            </form>
+        </section>
+
+
+        <section>
+            {% block result_page %}
+                <p class="text-light" id="voyage-result-page">page :  {{ voyages.currentPageNumber }}</p>
+            {% endblock %}
+
+            <turbo-frame id="voyage-list" data-turbo-action="advance">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <a href="{{ path('app_homepage', {
+                                    ...app.request.query.all(),
+                                    sort: 'purpose',
+                                    sortDirection: sort == 'purpose' and sortDirection|lower == 'asc' ? 'desc' : 'asc',
+                                }) }}">
+                                    Purpose {{ _self.sortArrow('purpose', sort, sortDirection|lower) }}
+                                </a>
+                            </th>
+                            <th>Planet</th>
+                            <th>
+                                <a href="{{ path('app_homepage', {
+                                    ...app.request.query.all(),
+                                    sort: 'leaveAt',
+                                    sortDirection: sort == 'leaveAt' and sortDirection|lower == 'asc' ? 'desc' : 'asc',
+                                }) }}">
+                                    Departing {{ _self.sortArrow('leaveAt', sort, sortDirection|lower) }}
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for voyage in voyages %}
+                            <tr>
+                                <td>{{ voyage.purpose }}</td>
+                                <td>
+                                    <div
+                                            data-controller="popover"
+                                            data-action="mouseenter->popover#show mouseleave->popover#hide"
+                                            class="position-relative bg-primary"
+                                    >
+                                        {{ voyage.planet.name }}
+                                        <template data-popover-target="content">
+                                            <div
+                                                    data-popover-target="card"
+                                                    class="position-absolute top-0 start-100 rounded bg-secondary text-light"
+                                            >
+                                                <turbo-frame data-skip-transition target="_top" loading="lazy" id="planet-card-{{ voyage.planet.id }}" src="{{ path('app_planet_show_card', {
+                                                    'id': voyage.planet.id,
+                                                }) }}">
+                                                    <div class="p-10">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                            <path d="M12 3a9 9 0 1 0 9 9"></path>
+                                                        </svg>
+                                                    </div>
+                                                </turbo-frame>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </td>
+                                <td>{{ voyage.leaveAt|date('Y-m-d') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="d-flex mt-4">
+                    {{ knp_pagination_render(voyages, 'pagination/pagination.html.twig') }}
+                </div>
+
+                <turbo-stream action="replace" target="voyage-result-count">
+                    <template>
+                        {{ block('result_count') }}
+                    </template>
+                </turbo-stream>
+
+                <turbo-stream action="replace" target="voyage-result-page">
+                    <template>
+                        {{ block('result_page') }}
+                    </template>
+                </turbo-stream>
+            </turbo-frame>
+
+        </section>
+    </div>
+{% endblock %}
